@@ -1,0 +1,31 @@
+{% extends 'planner/layout.html' %}
+
+{% block body %}
+<h3>My Tasks</h3>
+<div class="table-responsive">
+<table class="table table-bordered table-striped table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Task</th>
+            <th>Description</th>
+            <th>Due Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.desc }}</td>
+                <td>{{ task.due_date }}</td>
+                <td>{{ task.status }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3">You have not been assigned any tasks yet.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

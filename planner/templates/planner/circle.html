@@ -1,0 +1,103 @@
+{% extends 'planner/layout.html' %}
+
+{% block body %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0">{{ circle.name }}</h3>
+
+    <a href="{% url 'my_tasks' circle.id %}">
+        <button type="button" class="btn btn-primary">
+            My Tasks
+        </button>
+    </a>
+</div>
+
+<div class="table-responsive">
+<table class="table table-bordered table-striped table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Task</th>
+            <th>Description</th>
+            <th>Assigned To</th>
+            <th>Due Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+            <tr class="task-row">
+                <td>{{ task.title }}</td>
+                <td>{{ task.desc }}</td>
+                <td>{{ task.assigned_to }}</td>
+                <td>{{ task.due_date }}</td>
+                <td>
+                    <input 
+                        type="checkbox"
+                        class="task-checkbox"
+                        data-id="{{ task.id }}"
+                        {% if task.status == "done" %}checked{% endif %}
+                    >
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5">No tasks in this circle yet.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+    {% if is_admin %}
+        <a href="{% url 'assign_tasks' circle.id %}">
+        <button type="button" class="btn btn-primary">
+            Assign Tasks
+        </button>
+    </a>
+    {% endif %}
+
+{% block script %}
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    document.querySelectorAll(".task-checkbox").forEach(box =>{
+        box.addEventListener("change", function(){
+
+            const taskId = this.dataset.id
+            const row = this.closest(".task-row")
+            const checkbox = this
+
+            fetch(`/task/${taskId}/toggle/`, {
+                method: "POST",
+                headers:{
+                    "X-CSRFToken": getCookie("csrftoken")
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                row.classList.toggle("done")
+            })
+            .catch(() => {
+                checkbox.checked = !checkbox.checked
+                alert("Failed to update task")
+            })
+        })
+    })
+})
+
+function getCookie(name){
+    let cookieValue = null
+    if (document.cookie){
+        document.cookie.split(';').forEach(cookie => {
+            cookie = cookie.trim()
+            if (cookie.startsWith(name + '=')){
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+            }
+        })
+    }
+    return cookieValue
+}
+</script>
+{% endblock %}
+
+{% endblock %}

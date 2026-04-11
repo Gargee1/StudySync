@@ -1,0 +1,40 @@
+{% extends 'planner/layout.html' %}
+
+{% block body %}
+<div class="container mt-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-6 col-md-8 col-12">
+
+            <h3 class="mb-3">Assign a New Task</h3>
+
+            <form action="{% url 'assign_tasks' c_id=circle.id %}" method="post">
+                {% csrf_token %}
+
+                <input autocomplete="off" class="form-control mb-2"
+                       name="title" placeholder="Title" type="text" required>
+
+                <input autocomplete="off" class="form-control mb-2"
+                       name="desc" placeholder="Task Description" type="text" required>
+
+                <select name="assigned_to" class="form-control mb-2" required>
+                    <option value="" disabled selected>Assign to</option>
+                    {% for member in members %}
+                        <option value="{{ member.id }}">
+                            {{ member.username }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <input type="datetime-local" name="due_date"
+                       class="form-control mb-3">
+
+                <button class="btn btn-success w-100" type="submit">
+                    Assign
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
