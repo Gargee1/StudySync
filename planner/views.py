@@ -110,9 +110,16 @@ def join(request):
 
         return redirect("circles")
 
-    return render(request, "planner/circles.html", {
-        "form_type": "join"
-    })
+    else:
+        memberships = Membership.objects.filter(
+        user=request.user,
+        role="member"
+        ).select_related("circle", "circle__created_by")
+
+        return render(request, "planner/circles.html", {
+            "form_type": "join",
+            "memberships": memberships
+        })
 
 # Create a new circle
 def create(request):
@@ -128,9 +135,16 @@ def create(request):
 
         return redirect("circles")
     
-    return render(request, "planner/circles.html", {
-        "form_type": "create"
-    })
+    else:
+        memberships = Membership.objects.filter(
+        user=request.user,
+        role="admin"
+        ).select_related("circle", "circle__created_by")
+
+        return render(request, "planner/circles.html", {
+        "form_type": "create",
+        "memberships": memberships
+        })
 
 # Exit a circle
 def exit(request):
@@ -189,13 +203,19 @@ def assign_tasks(request, c_id):
 
 def toggle_task(request, task_id):
     if request.method == "POST":
-        task = get_object_or_404(Task, id = task_id)
+        task = get_object_or_404(Task, id=task_id)
 
-        user = request.user
-        if task.assigned_to != user:
-            return JsonResponse({
-                "error": "Unauthorised"
-            }, status = 403)
+        is_admin = Membership.objects.filter(
+            user=request.user,
+            circle=task.circle,
+            role="admin"
+        ).exists()
+
+        if task.assigned_to != request.user and not is_admin:
+            return JsonResponse(
+                {"error": "Unauthorized"},
+                status=403
+            )
 
         if task.status == Task.TODO:
             task.status = Task.DONE
@@ -204,4 +224,11 @@ def toggle_task(request, task_id):
 
         task.save()
 
-        return JsonResponse({"status": task.status})
+        return JsonResponse({
+            "status": task.status
+        })
+
+    return JsonResponse(
+        {"error": "POST request required."},
+        status=400
+    )

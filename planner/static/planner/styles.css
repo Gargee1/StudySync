@@ -1,9 +1,16 @@
-.task-row.done td{
+.task-row{
+    transition: 0.25s ease;
+}
+
+.task-row.done td:not(:last-child){
     text-decoration: line-through;
     color: gray;
     opacity: 0.6;
-    transition: 0.3s;
-}  
+}
+
+.task-checkbox{
+    cursor:pointer;
+}
 
 td{
     max-width:200px;

@@ -4,53 +4,67 @@
 
 <div class="container mt-4">
 
-    <h2 class="mb-4">Your Circles</h2>
+    <h2 class="mb-4">Exit a Circle</h2>
 
     {% if circles %}
 
-    <div class="row">
-        <div class="col-xl-5 col-lg-6 col-md-8 col-12">
+        <div class="row">
 
-            <form method="POST" class="mb-4">
-                {% csrf_token %}
+            {% for circle in circles %}
+            <div class="col-md-6 col-lg-4 mb-4">
 
-                <div class="mb-3">
-                    <label for="circle" class="form-label fw-bold">
-                        Select a circle:
-                    </label>
+                <div class="card shadow-sm h-100">
 
-                    <select name="c_id" id="circle"
-                            class="form-select" required>
+                    <div class="card-body">
 
-                        <option value="" disabled
-                            {% if not selected_circle %}selected{% endif %}>
-                            -- Choose a circle --
-                        </option>
-
-                        {% for circle in circles %}
-                        <option value="{{ circle.id }}"
-                            {% if selected_circle == circle.id %}selected{% endif %}>
+                        <h5 class="card-title">
                             {{ circle.name }}
-                        </option>
-                        {% endfor %}
+                        </h5>
 
-                    </select>
+                        <p class="text-muted mb-4">
+                            Leave this study circle.
+                        </p>
+
+                        <form method="POST">
+                            {% csrf_token %}
+
+                            <input
+                                type="hidden"
+                                name="c_id"
+                                value="{{ circle.id }}"
+                            >
+
+                            <button
+                                type="submit"
+                                class="btn btn-outline-danger btn-block"
+                                onclick="return confirm('Are you sure you want to exit this circle?');">
+
+                                Exit Circle
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
                 </div>
 
-                <button type="submit"
-                        class="btn btn-danger w-100"
-                        onclick="return confirm('Are you sure you want to exit this circle? This cannot be undone.');">
-                    Exit Circle
-                </button>
-
-            </form>
+            </div>
+            {% endfor %}
 
         </div>
-    </div>
 
     {% else %}
-        <p class="text-muted">You haven't joined any circles yet.</p>
+
+        <div class="alert alert-info">
+            You haven't joined any circles yet.
+        </div>
+
     {% endif %}
+
+    <a href="{% url 'circles' %}" class="btn btn-secondary">
+        Back
+    </a>
 
 </div>
 

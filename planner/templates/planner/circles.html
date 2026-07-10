@@ -2,67 +2,123 @@
 
 {% block body %}
 <div class="container mt-4">
-<div class="table-responsive">
-<table class="table table-bordered table-striped table-hover">
-    <thead class="thead-dark">
-        <tr>
-            <th>Circle Name</th>
-            <th>Created By</th>
-            <th>Your Role</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for m in memberships %}
-        <tr>
-            <td><a href="{% url 'circle' m.circle.id %}">{{ m.circle.name }}</a></td>
-            <td>{{ m.circle.created_by.username }}</td>
-            <td>{% if m.role == 'admin' %}<strong>Admin</strong>{% else %}Member{% endif %}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="3">You are not part of any circles yet.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-</div>
+
+    {% if memberships %}
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Circle Name</th>
+                    <th>Created By</th>
+                    <th>Your Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in memberships %}
+                <tr>
+                    <td>
+                        <a href="{% url 'circle' m.circle.id %}">
+                            {{ m.circle.name }}
+                        </a>
+                    </td>
+                    <td>{{ m.circle.created_by.username }}</td>
+                    <td>
+                        {% if m.role == 'admin' %}
+                            <strong>Admin</strong>
+                        {% else %}
+                            Member
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
 
     {% if form_type == "join" %}
-    <div class="col-xl-6 col-lg-7 col-md-9 col-12">
-        <h3 class="mb-3">Join a Circle</h3>
-        <form action="{% url 'join' %}" method="post" class="mb-4">
-            {% csrf_token %}
-            <input autocomplete="off" class="form-control mb-2" name="c_id" placeholder="Enter Circle ID" type="number" required>
-            <button class="btn btn-primary w-100" type="submit">Join</button>
-        </form>
-        <a href="{% url 'circles' %}" class="btn btn-secondary">Back</a>
-    </div>
+
+        <div class="col-xl-6 col-lg-7 col-md-9 col-12 px-0">
+            <h3 class="mb-3">Join a Circle</h3>
+
+            <form action="{% url 'join' %}" method="post" class="mb-3">
+                {% csrf_token %}
+
+                <input
+                    autocomplete="off"
+                    class="form-control mb-3"
+                    name="c_id"
+                    placeholder="Enter Circle ID"
+                    type="number"
+                    required
+                >
+
+                <button class="btn btn-primary w-100" type="submit">
+                    Join Circle
+                </button>
+            </form>
+
+            <a href="{% url 'circles' %}" class="btn btn-secondary">
+                Back
+            </a>
+        </div>
 
     {% elif form_type == "create" %}
-    <div class="col-xl-6 col-lg-7 col-md-9 col-12">
-        <h3 class="mb-3">Create a New Circle</h3>
-        <form action="{% url 'create' %}" method="post" class="mb-4">
-            {% csrf_token %}
-            <input autocomplete="off" class="form-control mb-2" name="c_name" placeholder="Circle Name" type="text" required>
-            <button class="btn btn-success w-100" type="submit">Create</button>
-        </form>
-        <a href="{% url 'circles' %}" class="btn btn-secondary">Back</a>
-    </div>
+
+        <div class="col-xl-6 col-lg-7 col-md-9 col-12 px-0">
+            <h3 class="mb-3">Create a New Circle</h3>
+
+            <form action="{% url 'create' %}" method="post" class="mb-3">
+                {% csrf_token %}
+
+                <input
+                    autocomplete="off"
+                    class="form-control mb-3"
+                    name="c_name"
+                    placeholder="Circle Name"
+                    type="text"
+                    required
+                >
+
+                <button class="btn btn-success w-100" type="submit">
+                    Create Circle
+                </button>
+            </form>
+
+            <a href="{% url 'circles' %}" class="btn btn-secondary">
+                Back
+            </a>
+        </div>
 
     {% else %}
+
         <h3 class="mb-3">What would you like to do?</h3>
+
         <form action="{% url 'join' %}" method="get" class="mb-2">
-            <button class="btn btn-outline-primary w-100" type="submit">Join an Existing Circle</button>
+            <button class="btn btn-outline-primary w-100" type="submit">
+                Join an Existing Circle
+            </button>
         </form>
-        <form action="{% url 'create' %}" method="get" class = "mb-2">
-            <button class="btn btn-outline-success w-100" type="submit">Create a New Circle</button>
+
+        <form action="{% url 'create' %}" method="get" class="mb-2">
+            <button class="btn btn-outline-success w-100" type="submit">
+                Create a New Circle
+            </button>
         </form>
-        <form action="{% url 'exit' %}" method="get" class = "mb-2">
-            <button class="btn btn-outline-danger w-100" type="submit">Exit a Circle</button>
+
+        <form action="{% url 'exit' %}" method="get" class="mb-2">
+            <button class="btn btn-outline-danger w-100" type="submit">
+                Exit a Circle
+            </button>
         </form>
-        <form action="{% url 'delete' %}" method="get" class = "mb-2">
-            <button class="btn btn-outline-danger w-100" type="submit">Delete a Circle</button>
+
+        <form action="{% url 'delete' %}" method="get" class="mb-2">
+            <button class="btn btn-outline-danger w-100" type="submit">
+                Delete a Circle
+            </button>
         </form>
-</div>
+
     {% endif %}
+
+</div>
 {% endblock %}

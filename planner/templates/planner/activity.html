@@ -39,46 +39,90 @@
 
 {% block script %}
 <script>
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function () {
 
-    document.querySelectorAll(".task-checkbox").forEach(box =>{
-        box.addEventListener("change", function(){
+    console.log("Script Loaded");
 
-            const taskId = this.dataset.id
-            const row = this.closest(".task-row")
-            const checkbox = this
+    document.querySelectorAll(".task-row").forEach(row => {
+        const checkbox = row.querySelector(".task-checkbox");
+
+        if (checkbox.checked) {
+            row.classList.add("done");
+        }
+    });
+
+    document.querySelectorAll(".task-checkbox").forEach(box => {
+
+        box.addEventListener("change", function () {
+
+            console.log("CHANGE EVENT:", this.dataset.id);
+
+            const checkbox = this;
+            const row = checkbox.closest(".task-row");
+            const taskId = checkbox.dataset.id;
+
+            console.log("Sending fetch...");
 
             fetch(`/task/${taskId}/toggle/`, {
                 method: "POST",
-                headers:{
+                headers: {
                     "X-CSRFToken": getCookie("csrftoken")
                 }
             })
-            .then(res => res.json())
+            .then(response => response.json())
             .then(data => {
-                row.classList.toggle("done")
-            })
-            .catch(() => {
-                checkbox.checked = !checkbox.checked
-                alert("Failed to update task")
-            })
-        })
-    })
-})
 
-function getCookie(name){
-    let cookieValue = null
-    if (document.cookie){
-        document.cookie.split(';').forEach(cookie => {
-            cookie = cookie.trim()
-            if (cookie.startsWith(name + '=')){
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+                console.log("Server returned:", data);
+
+                if (data.status === "done") {
+                    row.classList.add("done");
+                } else {
+                    row.classList.remove("done");
+                }
+
+            })
+            .catch(error => {
+
+                console.log(error);
+
+                checkbox.checked = !checkbox.checked;
+
+                alert("Couldn't update task.");
+
+            });
+
+        });
+
+    });
+
+});
+
+
+function getCookie(name) {
+
+    let cookieValue = null;
+
+    if (document.cookie && document.cookie !== "") {
+
+        document.cookie.split(";").forEach(cookie => {
+
+            cookie = cookie.trim();
+
+            if (cookie.startsWith(name + "=")) {
+
+                cookieValue = decodeURIComponent(
+                    cookie.substring(name.length + 1)
+                );
+
             }
-        })
+
+        });
+
     }
-    return cookieValue
+
+    return cookieValue;
 }
 </script>
-{% endblock %}
+{% endblock %}  
 
 {% endblock %}
